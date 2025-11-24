@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Telegram Mini App</title>
+<title>Max Swap Card</title>
 <style>
 body {
     margin: 0;
@@ -104,85 +104,79 @@ body {
 </div>
 
 <!-- SCREEN 3 -->
-<div id="payment" class="screen">
-    <h2 id="pay_title">Выпуск Max Swap Карты </h2>
+welcome: document.getElementById('welcome'),
+choose: document.getElementById('choose'),
+payment: document.getElementById('payment')
+};
+const loader = document.getElementById('loader');
+let selected = { name: null, price: 0 };
+const wallets = {
+BTC: "bc1qexamplebtc",
+ETH: "0xexampleeth",
+LTC: "ltc1example",
+USDC: "0xexampleusdcaddress"
+};
 
-    <p>Цена: <b id="price_usdt"></b> USDT</p>
 
-    <label>Выберите валюту:</label><br>
-    <select id="currency">
-        <option value="BTC">BTC</option>
-        <option value="ETH">ETH</option>
-        <option value="LTC">LTC</option>
-        <option value="USDC">USDC</option>
-    </select>
+function openScreen(id) {
+Object.values(screens).forEach(s => s.classList.remove('active'));
+loader.style.display = 'flex';
+setTimeout(() => {
+loader.style.display = 'none';
+screens[id].classList.add('active');
+}, 900);
+}
 
-    <p>К оплате: <b id="converted_amount">...</b></p>
 
-    <p>Адрес: <b id="wallet_address">...</b></p>
-</div>
+function selectOption(name, price) {
+selected = { name, price };
+document.getElementById('pay_title').innerText = name;
+document.getElementById('price_usdt').innerText = price;
+openScreen('payment');
+setTimeout(updateConversion, 500);
+}
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const screens = {
-        welcome: document.getElementById('welcome'),
-        choose: document.getElementById('choose'),
-        payment: document.getElementById('payment')
-    };
-    const loader = document.getElementById('loader');
-    let selected = { name: null, price: 0 };
-    const wallets = {
-        BTC: "bc1qexamplebtc",
-        ETH: "0xexampleeth",
-        LTC: "ltc1example",
-        USDC: "0xexampleusdcaddress"
-    };
 
-    function openScreen(id) {
-        Object.values(screens).forEach(s => s.classList.remove('active'));
-        loader.style.display = 'flex';
-        setTimeout(() => {
-            loader.style.display = 'none';
-            screens[id].classList.add('active');
-        }, 900);
-    }
+async function updateConversion() {
+const cur = document.getElementById("currency").value;
+try {
+const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,ethereum,litecoin,usd-coin&vs_currencies=usd");
+const data = await res.json();
+const priceCryptoUSD = {
+BTC: data.bitcoin.usd,
+ETH: data.ethereum.usd,
+LTC: data.litecoin.usd,
+USDC: data["usd-coin"].usd
+};
+const converted = (selected.price / priceCryptoUSD[cur]).toFixed(6);
+document.getElementById('converted_amount').innerText = `${converted} ${cur}`;
+document.getElementById('wallet_address').innerText = wallets[cur];
+} catch {
+document.getElementById('converted_amount').innerText = "Ошибка загрузки курса";
+}
+}
 
-    function selectOption(name, price) {
-        selected = { name, price };
-        document.getElementById('pay_title').innerText = name;
-        document.getElementById('price_usdt').innerText = price;
-        openScreen('payment');
-        setTimeout(updateConversion, 500);
-    }
 
-    async function updateConversion() {
-        const cur = document.getElementById("currency").value;
-        try {
-            const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,ethereum,litecoin,usd-coin&vs_currencies=usd");
-            const data = await res.json();
-            const priceCryptoUSD = {
-                BTC: data.bitcoin.usd,
-                ETH: data.ethereum.usd,
-                LTC: data.litecoin.usd,
-                USDC: data["usd-coin"].usd
-            };
-            const converted = (selected.price / priceCryptoUSD[cur]).toFixed(6);
-            document.getElementById('converted_amount').innerText = `${converted} ${cur}`;
-            document.getElementById('wallet_address').innerText = wallets[cur];
-        } catch {
-            document.getElementById('converted_amount').innerText = "Ошибка загрузки курса";
-        }
-    }
+document.getElementById('welcomeBtn').addEventListener('click', () => openScreen('choose'));
 
-    document.getElementById('welcomeBtn').addEventListener('click', () => openScreen('choose'));
 
-    document.querySelectorAll('#choose .option').forEach(opt => {
-        opt.addEventListener('click', () => selectOption(opt.dataset.name, parseFloat(opt.dataset.price)));
-    });
-
-    document.getElementById('currency').addEventListener('change', updateConversion);
+document.querySelectorAll('#choose .option').forEach(opt => {
+opt.addEventListener('click', () => selectOption(opt.dataset.name, parseFloat(opt.dataset.price)));
 });
+
+
+document.getElementById('currency').addEventListener('change', updateConversion);
+});
+let timerValue = 15;
+setInterval(() => {
+timerValue--;
+if (timerValue <= 0) timerValue = 15;
+document.getElementById('timer').innerText = timerValue;
+}, 1000);
+
+
 </script>
+
 
 </body>
 </html>

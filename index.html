@@ -21,7 +21,23 @@
         display: block;
     }
 
-    /* --- Welcome Screen --- */
+    /* Loader */
+    #loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        z-index: 1000;
+        display: none;
+    }
+
+    /* Welcome Slider */
     .slider-container {
         width: 100%;
         overflow: hidden;
@@ -41,7 +57,9 @@
     }
 
     .slide img {
-        width: 90%;
+        width: 75vw;
+        max-height: 70vh;
+        object-fit: contain;
         margin-top: 20px;
         border-radius: 12px;
     }
@@ -57,20 +75,30 @@
         font-size: 18px;
     }
 
-    /* --- Choose screen --- */
+    /* Choose screen */
     .option {
         padding: 15px;
         margin: 10px 0;
         border: 1px solid #ccc;
         border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
         font-size: 18px;
     }
 
-    .option:hover {
-        background: #f1f1f1;
+    .option img {
+        width: 50px;
+        height: 50px;
     }
 
-    /* --- Payment --- */
+    .desc {
+        color: #555;
+        font-size: 15px;
+        margin: 15px 0;
+    }
+
+    /* Payment */
     select, input {
         width: 100%;
         padding: 12px;
@@ -89,29 +117,49 @@
 </head>
 <body>
 
-<!-- WELCOME SCREEN -->
+<div id="loader">Загрузка...</div>
+
+<!-- Welcome Screen -->
 <div id="welcome" class="screen active">
     <div class="slider-container" id="slider">
         <div class="slides" id="slides">
-            <div class="slide"><img src="https://picsum.photos/300/500?1"></div>
-            <div class="slide"><img src="https://picsum.photos/300/500?2"></div>
+            <div class="slide"><img src="https://picsum.photos/400/700?1"></div>
+            <div class="slide"><img src="https://picsum.photos/400/700?2"></div>
             <div class="slide">
-                <img src="https://picsum.photos/300/500?3">
-                <button class="action-btn" onclick="openChoose()">Действие</button>
+                <img src="https://picsum.photos/400/700?3">
+                <button class="action-btn" onclick="transitionTo('choose')">Действие</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CHOOSE SCREEN -->
+<!-- Choose Screen -->
 <div id="choose" class="screen">
     <h2>Выберите параметр</h2>
-    <div class="option" onclick="selectOption('Параметр A', 10)">Параметр A — 10 USDT</div>
-    <div class="option" onclick="selectOption('Параметр B', 25)">Параметр B — 25 USDT</div>
-    <div class="option" onclick="selectOption('Параметр C', 50)">Параметр C — 50 USDT</div>
+
+    <div class="desc">Это небольшое описание параметров. Текст пример.</div>
+
+    <div class="option" onclick="selectOption('Параметр A', 10)">
+        <img src="https://picsum.photos/50/50?11">
+        Параметр A — 10 USDT
+    </div>
+
+    <div class="desc">Ещё одно описание, просто рандомный текст.</div>
+
+    <div class="option" onclick="selectOption('Параметр B', 25)">
+        <img src="https://picsum.photos/50/50?22">
+        Параметр B — 25 USDT
+    </div>
+
+    <div class="desc">Небольшое пояснение перед третьим параметром.</div>
+
+    <div class="option" onclick="selectOption('Параметр C', 50)">
+        <img src="https://picsum.photos/50/50?33">
+        Параметр C — 50 USDT
+    </div>
 </div>
 
-<!-- PAYMENT SCREEN -->
+<!-- Payment Screen -->
 <div id="payment" class="screen">
     <h2>Оплата</h2>
     <p id="chosenInfo"></p>
@@ -136,14 +184,12 @@
 </div>
 
 <script>
-/* ========== WELCOME SLIDER SWIPE ========== */
+/* Slider */
 let startX = 0;
 let index = 0;
 const slides = document.getElementById('slides');
 
-document.getElementById('slider').addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-});
+document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
 document.getElementById('slider').addEventListener('touchend', e => {
     const diff = e.changedTouches[0].clientX - startX;
     if (diff < -50 && index < 2) index++;
@@ -151,26 +197,35 @@ document.getElementById('slider').addEventListener('touchend', e => {
     slides.style.transform = `translateX(-${index * 100}%)`;
 });
 
-/* ========== NAVIGATION ========== */
-function openChoose() {
-    document.getElementById('welcome').classList.remove('active');
-    document.getElementById('choose').classList.add('active');
+/* Loader */
+function showLoader(cb) {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
+    setTimeout(() => {
+        loader.style.display = 'none';
+        cb();
+    }, 1200);
 }
 
-let chosen = { name: "", price: 0 };
+/* Transition */
+function transitionTo(screen) {
+    showLoader(() => {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screen).classList.add('active');
+    });
+}
+
+/* Options */
+let chosen = { name: '', price: 0 };
 
 function selectOption(name, price) {
     chosen = { name, price };
-    document.getElementById('choose').classList.remove('active');
-    document.getElementById('payment').classList.add('active');
-
-    document.getElementById('chosenInfo').innerText =
-        `Вы выбрали: ${name} (${price} USDT)`;
-
+    transitionTo('payment');
+    document.getElementById('chosenInfo').innerText = `Вы выбрали: ${name} (${price} USDT)`;
     updatePayment();
 }
 
-/* ========== EXCHANGE RATES (пример фиксированных) ========== */
+/* Exchange rates */
 const rates = {
     USDT: 1,
     USDC: 1,
@@ -180,7 +235,6 @@ const rates = {
     SOL: 1 / 150
 };
 
-/* Фейковые адреса кошельков */
 const wallets = {
     USDT: "TXYZ123456789USDT",
     USDC: "USDC987654321XYZ",
@@ -193,7 +247,6 @@ const wallets = {
 function updatePayment() {
     const cur = document.getElementById("currency").value;
     const converted = (chosen.price * rates[cur]).toFixed(6);
-
     document.getElementById("amount").innerText = converted + " " + cur;
     document.getElementById("wallet").innerText = wallets[cur];
 }

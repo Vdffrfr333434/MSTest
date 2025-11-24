@@ -121,12 +121,9 @@
 
 <!-- Welcome Screen -->
 <div id="welcome" class="screen active">
-    <div class="slide" style="text-align:center;">
-        <img src="https://picsum.photos/400/700?1" style="width:75vw; max-height:75vh; object-fit:contain; margin-top:20px; border-radius:12px;">
-        <button class="action-btn" style="width:75vw;" onclick="transitionTo('choose')">Действие</button>
-    </div>
-</div>
-        </div>
+    <div class="slider-container" id="slider">
+        <div class="slides" id="slides">
+            <div class="slide"><img src="https://picsum.photos/400/700?1"></div>
             <div class="slide"><img src="https://picsum.photos/400/700?2"></div>
             <div class="slide">
                 <img src="https://picsum.photos/400/700?3">
@@ -140,23 +137,9 @@
 <div id="choose" class="screen">
     <h2>Выберите параметр</h2>
 
+    <div class="desc">Это небольшое описание параметров. Текст пример.</div>
+
     <div class="option" onclick="selectOption('Параметр A', 10)">
-        <img src="https://picsum.photos/50/50?11">
-        Параметр A — 10 USDT
-    </div>
-    <div class="desc">Описание параметра A. Текст пример.</div>
-
-    <div class="option" onclick="selectOption('Параметр B', 25)">
-        <img src="https://picsum.photos/50/50?22">
-        Параметр B — 25 USDT
-    </div>
-    <div class="desc">Описание параметра B. Рандомный текст.</div>
-
-    <div class="option" onclick="selectOption('Параметр C', 50)">
-        <img src="https://picsum.photos/50/50?33">
-        Параметр C — 50 USDT
-    </div>
-    <div class="desc">Описание параметра C. Ещё немного текста.</div>" onclick="selectOption('Параметр A', 10)">
         <img src="https://picsum.photos/50/50?11">
         Параметр A — 10 USDT
     </div>
@@ -202,7 +185,17 @@
 
 <script>
 /* Slider */
-// Слайдера больше нет — один слайд. Убираем обработчики свайпа.
+let startX = 0;
+let index = 0;
+const slides = document.getElementById('slides');
+
+document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
+document.getElementById('slider').addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (diff < -50 && index < 2) index++;
+    if (diff > 50 && index > 0) index--;
+    slides.style.transform = `translateX(-${index * 100}%)`;
+});
 
 /* Loader */
 function showLoader(cb) {
@@ -233,20 +226,14 @@ function selectOption(name, price) {
 }
 
 /* Exchange rates */
-async function fetchRates() {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,ethereum,litecoin,usd-coin&vs_currencies=usd');
-    const data = await res.json();
-
-    return {
-        USDT: 1,
-        BTC: 1 / data.bitcoin.usd,
-        ETH: 1 / data.ethereum.usd,
-        LTC: 1 / data.litecoin.usd,
-        USDC: 1 / data["usd-coin"].usd
-    };
-}
-
-let rates = {};
+const rates = {
+    USDT: 1,
+    USDC: 1,
+    BTC: 1 / 65000,
+    ETH: 1 / 3000,
+    LTC: 1 / 75,
+    SOL: 1 / 150
+};
 
 const wallets = {
     USDT: "TXYZ123456789USDT",
@@ -257,15 +244,7 @@ const wallets = {
     SOL: "SolanaAddressABC987"
 };
 
-async function updatePayment() {
-    if (Object.keys(rates).length === 0) rates = await fetchRates();
-
-    const cur = document.getElementById("currency").value;
-    const converted = (chosen.price * rates[cur]).toFixed(6);
-
-    document.getElementById("amount").innerText = converted + " " + cur;
-    document.getElementById("wallet").innerText = wallets[cur];
-}() {
+function updatePayment() {
     const cur = document.getElementById("currency").value;
     const converted = (chosen.price * rates[cur]).toFixed(6);
     document.getElementById("amount").innerText = converted + " " + cur;

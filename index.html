@@ -202,17 +202,7 @@
 
 <script>
 /* Slider */
-let startX = 0;
-let index = 0;
-const slides = document.getElementById('slides');
-
-document.getElementById('slider').addEventListener('touchstart', e => startX = e.touches[0].clientX);
-document.getElementById('slider').addEventListener('touchend', e => {
-    const diff = e.changedTouches[0].clientX - startX;
-    if (diff < -50 && index < 2) index++;
-    if (diff > 50 && index > 0) index--;
-    slides.style.transform = `translateX(-${index * 100}%)`;
-});
+// Слайдера больше нет — один слайд. Убираем обработчики свайпа.
 
 /* Loader */
 function showLoader(cb) {

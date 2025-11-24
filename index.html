@@ -128,7 +128,10 @@ body {
 
     <p>Адрес: <b id="wallet_address">...</b></p>
 
+
     <p style="margin-top:20px; font-size:14px; color:#444;">Карта будет выпущена автоматические после того как транзакция получит 2 подтверждения сети.</p>
+    <!-- QR-код появится здесь -->
+<div id="qrcode" style="margin-top:20px;"></div>
 
     <div style="margin-top:10px; font-size:18px; font-weight:bold; text-align:center;">
         Статус: ожидает оплаты. Обновление статуса через: <span id="timer">15</span> сек
@@ -212,8 +215,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timerValue <= 0) timerValue = 15;
         document.getElementById('timer').innerText = timerValue;
     }, 1000);
+});t
+
+    document.getElementById('qrcode').innerHTML = "";
+new QRCode(document.getElementById('qrcode'), {
+    text: wallets[cur],
+    width: 180,
+    height: 180
 });
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
 </body>
 </html>

@@ -1,277 +1,153 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini App</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Telegram Mini App</title>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #fff;
-        overflow-x: hidden;
-    }
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #ffffff;
+}
+.screen {
+    display: none;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.active { display: block; }
 
-    .screen {
-        display: none;
-        padding: 20px;
-    }
+.button {
+    width: 75vw;
+    margin: 20px auto 0;
+    padding: 15px;
+    font-size: 18px;
+    text-align: center;
+    background: #0088ff;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    display: block;
+}
 
-    .active {
-        display: block;
-    }
+.option {
+    background: #f2f2f2;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+}
+.option img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+}
+.desc {
+    font-size: 13px;
+    margin-top: 4px;
+    color: #444;
+}
 
-    /* Loader */
-    #loader {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 22px;
-        z-index: 1000;
-        display: none;
-    }
-
-    /* Welcome Slider */
-    .slider-container {
-        width: 100%;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .slides {
-        display: flex;
-        width: 300%;
-        transition: transform .3s ease;
-    }
-
-    .slide {
-        width: 100%;
-        flex-shrink: 0;
-        text-align: center;
-    }
-
-    .slide img {
-        width: 75vw;
-        max-height: 70vh;
-        object-fit: contain;
-        margin-top: 20px;
-        border-radius: 12px;
-    }
-
-    .action-btn {
-        margin-top: 20px;
-        padding: 12px 20px;
-        width: 80%;
-        background: #007bff;
-        color: #fff;
-        border-radius: 8px;
-        border: none;
-        font-size: 18px;
-    }
-
-    /* Choose screen */
-    .option {
-        padding: 15px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 18px;
-    }
-
-    .option img {
-        width: 50px;
-        height: 50px;
-    }
-
-    .desc {
-        color: #555;
-        font-size: 15px;
-        margin: 15px 0;
-    }
-
-    /* Payment */
-    select, input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        font-size: 16px;
-    }
-
-    .pay-box {
-        margin-top: 20px;
-        padding: 15px;
-        background: #f7f7f7;
-        border-radius: 10px;
-        font-size: 16px;
-    }
+#loader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+}
 </style>
 </head>
 <body>
 
 <div id="loader">Загрузка...</div>
 
-<!-- Welcome Screen -->
-<div id="welcome" class="screen active">
-    <div class="slide" style="text-align:center;">
-        <img src="https://picsum.photos/400/700?1" style="width:75vw; max-height:75vh; object-fit:contain; margin-top:20px; border-radius:12px;">
-        <button class="action-btn" style="width:75vw;" onclick="transitionTo('choose')">Действие</button>
-    </div>
-</div>
-        </div>
-            <div class="slide"><img src="https://picsum.photos/400/700?2"></div>
-            <div class="slide">
-                <img src="https://picsum.photos/400/700?3">
-                <button class="action-btn" onclick="transitionTo('choose')">Действие</button>
-            </div>
-        </div>
-    </div>
+<!-- SCREEN 1 -->
+<div id="welcome" class="screen active" style="text-align:center;">
+    <img src="https://picsum.photos/600/900" style="width:75vw; max-height:75vh; object-fit:contain; margin-top:20px;">
+    <button class="button" onclick="openScreen('choose')">Действие</button>
 </div>
 
-<!-- Choose Screen -->
+<!-- SCREEN 2 -->
 <div id="choose" class="screen">
     <h2>Выберите параметр</h2>
 
-    <div class="option" onclick="selectOption('Параметр A', 10)">
-        <img src="https://picsum.photos/50/50?11">
-        Параметр A — 10 USDT
-    </div>
-    <div class="desc">Описание параметра A. Текст пример.</div>
-
-    <div class="option" onclick="selectOption('Параметр B', 25)">
-        <img src="https://picsum.photos/50/50?22">
-        Параметр B — 25 USDT
-    </div>
-    <div class="desc">Описание параметра B. Рандомный текст.</div>
-
-    <div class="option" onclick="selectOption('Параметр C', 50)">
-        <img src="https://picsum.photos/50/50?33">
-        Параметр C — 50 USDT
-    </div>
-    <div class="desc">Описание параметра C. Ещё немного текста.</div>" onclick="selectOption('Параметр A', 10)">
-        <img src="https://picsum.photos/50/50?11">
-        Параметр A — 10 USDT
+    <div class="option" onclick="selectOption('Позиция A', 10)">
+        <img src="https://picsum.photos/50?1">
+        <div>
+            Позиция A — 10 USDT
+            <div class="desc">Описание позиции A...</div>
+        </div>
     </div>
 
-    <div class="desc">Ещё одно описание, просто рандомный текст.</div>
-
-    <div class="option" onclick="selectOption('Параметр B', 25)">
-        <img src="https://picsum.photos/50/50?22">
-        Параметр B — 25 USDT
+    <div class="option" onclick="selectOption('Позиция B', 25)">
+        <img src="https://picsum.photos/50?2">
+        <div>
+            Позиция B — 25 USDT
+            <div class="desc">Описание позиции B...</div>
+        </div>
     </div>
 
-    <div class="desc">Небольшое пояснение перед третьим параметром.</div>
-
-    <div class="option" onclick="selectOption('Параметр C', 50)">
-        <img src="https://picsum.photos/50/50?33">
-        Параметр C — 50 USDT
+    <div class="option" onclick="selectOption('Позиция C', 50)">
+        <img src="https://picsum.photos/50?3">
+        <div>
+            Позиция C — 50 USDT
+            <div class="desc">Описание позиции C...</div>
+        </div>
     </div>
 </div>
 
-<!-- Payment Screen -->
+<!-- SCREEN 3 -->
 <div id="payment" class="screen">
-    <h2>Оплата</h2>
-    <p id="chosenInfo"></p>
+    <h2 id="pay_title">Оплата</h2>
 
-    <label>Выберите валюту:</label>
-    <select id="currency" onchange="updatePayment()">
-        <option value="USDT">USDT</option>
+    <p>Цена: <b id="price_usdt"></b> USDT</p>
+
+    <label>Криптовалюта:</label><br>
+    <select id="currency" onchange="updateConversion()">
         <option value="BTC">BTC</option>
         <option value="ETH">ETH</option>
         <option value="LTC">LTC</option>
         <option value="USDC">USDC</option>
-        <option value="SOL">SOL</option>
     </select>
 
-    <div class="pay-box">
-        <div>Сумма к оплате:</div>
-        <div id="amount">—</div>
-        <hr>
-        <div>Адрес для оплаты:</div>
-        <div id="wallet">—</div>
-    </div>
+    <p>К оплате: <b id="converted_amount">...</b></p>
+
+    <p>Адрес: <b id="wallet_address">...</b></p>
 </div>
 
 <script>
-/* Slider */
-// Слайдера больше нет — один слайд. Убираем обработчики свайпа.
-
-/* Loader */
-function showLoader(cb) {
-    const loader = document.getElementById('loader');
-    loader.style.display = 'flex';
-    setTimeout(() => {
-        loader.style.display = 'none';
-        cb();
-    }, 1200);
-}
-
-/* Transition */
-function transitionTo(screen) {
-    showLoader(() => {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screen).classList.add('active');
-    });
-}
-
-/* Options */
-let chosen = { name: '', price: 0 };
-
-function selectOption(name, price) {
-    chosen = { name, price };
-    transitionTo('payment');
-    document.getElementById('chosenInfo').innerText = `Вы выбрали: ${name} (${price} USDT)`;
-    updatePayment();
-}
-
-/* Exchange rates */
-async function fetchRates() {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,ethereum,litecoin,usd-coin&vs_currencies=usd');
-    const data = await res.json();
-
-    return {
-        USDT: 1,
-        BTC: 1 / data.bitcoin.usd,
-        ETH: 1 / data.ethereum.usd,
-        LTC: 1 / data.litecoin.usd,
-        USDC: 1 / data["usd-coin"].usd
-    };
-}
-
-let rates = {};
+let selected = { name: null, price: 0 };
 
 const wallets = {
-    USDT: "TXYZ123456789USDT",
-    USDC: "USDC987654321XYZ",
-    BTC: "bc1qbitcoinaddress123",
-    ETH: "0xEthereumAddressABC123",
-    LTC: "ltc1LitecoinAddress567",
-    SOL: "SolanaAddressABC987"
+    BTC: "bc1qexamplebtc",
+    ETH: "0xexampleeth",
+    LTC: "ltc1example",
+    USDC: "0xexampleusdcaddress"
 };
 
-async function updatePayment() {
-    if (Object.keys(rates).length === 0) rates = await fetchRates();
-
-    const cur = document.getElementById("currency").value;
-    const converted = (chosen.price * rates[cur]).toFixed(6);
-
-    document.getElementById("amount").innerText = converted + " " + cur;
-    document.getElementById("wallet").innerText = wallets[cur];
-}() {
-    const cur = document.getElementById("currency").value;
-    const converted = (chosen.price * rates[cur]).toFixed(6);
-    document.getElementById("amount").innerText = converted + " " + cur;
-    document.getElementById("wallet").innerText = wallets[cur];
+function openScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('loader').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById(id).classList.add('active');
+    }, 900);
 }
-</script>
 
-</body>
-</html>
+function selectOption(name, price) {
+    selected = { name, price };
+    document.getElementById('pay_title').innerText = name;
+    document.getElementById('price_usdt').innerText = price;
+
+    openScreen('payment');
+    setTimeout(updateConversion, 1000);
+}
+
+async function updateCon

@@ -132,7 +132,7 @@ body {
         <option value="USDT_SOL">USDT SOL</option>
         <option value="BTC">BTC</option>
         <option value="ETH">ETH</option>
-        <option value="USDC">USDC</option>
+        <option value="USDC">USDC ERC-20</option>
         <option value="LTC">LTC</option>
     </select>
 
@@ -145,7 +145,7 @@ body {
     <!-- QR-код появится здесь -->
     <div id="qrcode" style="margin-top:20px;"></div>
 
-    <div style="margin-top:10px; font-size:18px; font-weight:bold; text-align:center;">
+    <div style="margin-top:10px; font-size:18px; font-weight:bold; text-align:center;"> <br>
         Статус: ожидает оплаты. Обновление статуса через: <span id="timer">15</span> сек
     </div>
 </div>
@@ -162,13 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let selected = { name: null, price: 0 };
 
     const wallets = {
-        USDT_TRC20: "TRC20_ADDRESS_EXAMPLE",
-        USDT_ERC20: "ERC20_ADDRESS_EXAMPLE",
-        USDT_SOL: "SOL_ADDRESS_EXAMPLE",
-        BTC: "bc1qexamplebtc",
-        ETH: "0xexampleeth",
-        LTC: "ltc1example",
-        USDC: "0xexampleusdcaddress"
+        USDT_TRC20: "TVis1d6QARhWBQ6XZmisD2oSWGnqFM2qzX",
+        USDT_ERC20: "0xaacE295640C15344C6a2DC934a3AACcD4e23cc20",
+        USDT_SOL: "AVQJ4s1Y9BrtEmnH5WrxPT818YibUJsaR4uU6Aiht647",
+        BTC: "bc1qrhqsqsds47hycq0zkpx8fdvwfyu0hey843lz6j",
+        ETH: "0xaacE295640C15344C6a2DC934a3AACcD4e23cc20",
+        LTC: "LS2Pg4V8AhaQ1FRweGUHfkBxtwFAbJ6Dpy",
+        USDC_ERC-20: "0xaacE295640C15344C6a2DC934a3AACcD4e23cc20"
     };
 
     function openScreen(id) {
